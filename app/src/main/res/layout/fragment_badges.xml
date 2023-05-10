@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/badges_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="top"
+    android:orientation="vertical"
+    android:padding="32dp">
+
+    <TextView
+        android:id="@+id/Scan_Badge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawablePadding="16dp"
+        android:text="@string/badge_unlocked_scanning_artefact"
+        android:textSize="18sp"
+        app:drawableLeftCompat="@drawable/trophy" />
+
+    <TextView
+        android:id="@+id/Artefact_Badge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawablePadding="16dp"
+        android:text="@string/badge_unlocked_reading_about_all_artefacts"
+        android:textSize="18sp"
+        app:drawableLeftCompat="@drawable/trophy" />
+
+    <TextView
+        android:id="@+id/Improve_Badge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawablePadding="16dp"
+        android:text="@string/badge_unlocked_had_an_improvement_implemented"
+        android:textSize="18sp"
+        app:drawableStartCompat="@drawable/trophy" />
+
+    <TextView
+        android:id="@+id/Change_Badge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawablePadding="16dp"
+        android:text="@string/badge_unlocked_submitted_an_improvement"
+        android:textSize="18sp"
+        app:drawableStartCompat="@drawable/trophy" />
+
+    <TextView
+        android:id="@+id/TimeLine_Badge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawablePadding="16dp"
+        android:text="@string/badge_unlocked_time_lord"
+        android:textSize="18sp"
+        app:drawableStartCompat="@drawable/trophy" />
+
+</LinearLayout>

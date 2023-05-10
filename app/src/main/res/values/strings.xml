@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">Museum App</string>
+    <string name="title_TimeLine">Timeline</string>
+    <string name="title_Artefacts">Artefacts</string>
+    <string name="title_QRScan">Scan</string>
+    <string name="title_SuggestChange">Changes</string>
+    <string name="body_QRScan">Find a QR code near a device to find out more details!</string>
+    <string name="body_SuggestChange">Something not quite right?, Have an idea for improvement? Submit a change and it will be sent to one of our curators!</string>
+    <string name="title_Badges">Badges</string>
+    <string name="submit">Submit</string>
+    <string name="past_submissions">Past Submissions:</string>
+    <string name="Submit_change_hint">I think…</string>
+    <string name="account_icon">Account Icon</string>
+    <string name="email_prompt">Email</string>
+    <string name="password_prompt">Password</string>
+    <string name="login_prompt">Login</string>
+    <string name="register_prompt">Register</string>
+    <string name="logged_in_user">Hi, %s</string>
+    <string name="not_logged_in">Login to submit a change!</string>
+    <string name="Logout">Logout</string>
+    <string name="DefaultArtefactImageDesc">Artefact Image</string>
+    <string name="scanButton">Scan</string>
+    <string name="artefact_name">Artefact_Name</string>
+    <string name="description_short">Description_Short</string>
+    <string name="description_long">Description_Long</string>
+    <string name="year">Year</string>
+    <string name="badge_unlocked_time_lord">Badge Unlocked!: Time Lord</string>
+    <string name="badge_unlocked_submitted_an_improvement">Badge Unlocked!: Submitted an Improvement!</string>
+    <string name="badge_unlocked_had_an_improvement_implemented">Badge Unlocked!: Had an Improvement Implemented</string>
+    <string name="badge_unlocked_scanning_artefact">Badge Unlocked!: Scanning Artefact</string>
+    <string name="badge_unlocked_reading_about_all_artefacts">Badge Unlocked!: Reading about all Artefacts!</string>
+</resources>

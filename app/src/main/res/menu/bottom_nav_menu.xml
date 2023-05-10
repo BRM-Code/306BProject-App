@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_TimeLine"
+        android:icon="@drawable/timeline_clock_outline"
+        android:title="@string/title_TimeLine" />
+
+    <item
+        android:id="@+id/navigation_Artefacts"
+        android:icon="@drawable/baseline_manage_search"
+        android:title="@string/title_Artefacts" />
+
+    <item
+        android:id="@+id/navigation_QRScan"
+        android:icon="@drawable/qr_code_scanner"
+        android:title="@string/title_QRScan" />
+
+    <item
+        android:id="@+id/navigation_SuggestChange"
+        android:icon="@drawable/edit_note"
+        android:title="@string/title_SuggestChange" />
+
+    <item
+        android:id="@+id/navigation_Badges"
+        android:icon="@drawable/trophy"
+        android:title="@string/title_Badges" />
+
+</menu>

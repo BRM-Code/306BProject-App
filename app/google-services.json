@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "107301502660",
+    "project_id": "museumapp-705e2",
+    "storage_bucket": "museumapp-705e2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:107301502660:android:511a4787914d255ece1391",
+        "android_client_info": {
+          "package_name": "com.example.myapplication"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "107301502660-32s22jrjnr6fu06v7humq21t2mjs47tu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAjmX29FRdFprvuzY5ueppCBDve0lun9mU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "107301502660-32s22jrjnr6fu06v7humq21t2mjs47tu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

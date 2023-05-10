@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_QRScan">
+
+    <fragment
+        android:id="@+id/navigation_TimeLine"
+        android:name="com.example.myapplication.Timeline"
+        android:label="@string/title_TimeLine"
+        tools:layout="@layout/fragment_timeline" />
+
+    <fragment
+        android:id="@+id/navigation_Artefacts"
+        android:name="com.example.myapplication.Artefacts"
+        android:label="@string/title_Artefacts"
+        tools:layout="@layout/fragment_artefacts" />
+
+    <fragment
+        android:id="@+id/navigation_SuggestChange"
+        android:name="com.example.myapplication.SuggestChange"
+        android:label="@string/title_SuggestChange"
+        tools:layout="@layout/fragment_suggest_change" />
+
+    <fragment
+        android:id="@+id/navigation_QRScan"
+        android:name="com.example.myapplication.QRScan"
+        android:label="@string/title_QRScan"
+        tools:layout="@layout/fragment_q_r_scan" />
+
+    <fragment
+        android:id="@+id/navigation_Badges"
+        android:name="com.example.myapplication.Badges"
+        android:label="@string/title_Badges"
+        tools:layout="@layout/fragment_badges" />
+
+</navigation>
