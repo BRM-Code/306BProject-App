@@ -29,4 +29,9 @@
     <string name="badge_unlocked_had_an_improvement_implemented">Badge Unlocked!: Had an Improvement Implemented</string>
     <string name="badge_unlocked_scanning_artefact">Badge Unlocked!: Scanning Artefact</string>
     <string name="badge_unlocked_reading_about_all_artefacts">Badge Unlocked!: Reading about all Artefacts!</string>
+    <string name="improvementImplemented">%s Had a suggested improvement implemented</string>
+    <string name="readAll">%s read all the Artefacts</string>
+    <string name="scanArtefact">%s Scanned an Artefact</string>
+    <string name="submittedImprovement">%s Submitted an Improvement</string>
+    <string name="timeLord">%s explored all time periods</string>
 </resources>

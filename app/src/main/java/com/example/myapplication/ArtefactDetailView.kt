@@ -10,7 +10,6 @@ import com.example.myapplication.databinding.FragmentArtefactviewBinding
 class ArtefactDetailView : Fragment() {
     private var _binding: FragmentArtefactviewBinding? = null
     private val binding get() = _binding!!
-    private lateinit var artefact: Artefact
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -24,7 +23,7 @@ class ArtefactDetailView : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        artefact = arguments?.get("ChosenArtefact") as Artefact
+        val artefact = arguments?.get("ChosenArtefact") as Artefact
 
         // Use the artefact object to display information
         binding.artefactNameView.text = artefact.name
@@ -37,13 +36,5 @@ class ArtefactDetailView : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    companion object {
-        fun newInstance(artefact: Artefact): ArtefactDetailView {
-            val fragment = ArtefactDetailView()
-            fragment.artefact = artefact
-            return fragment
-        }
     }
 }

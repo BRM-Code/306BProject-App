@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.Navigation
 import com.example.myapplication.databinding.FragmentQRScanBinding
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.firestore.FirebaseFirestore
@@ -49,7 +50,7 @@ class QRScan : Fragment() {
             .addOnSuccessListener { barcode ->
                 Snackbar.make(view, "Scanned!", Snackbar.LENGTH_SHORT).show()
                 val rawValue: String? = barcode.rawValue
-                findArtefact(rawValue)
+                findArtefact(rawValue, view)
             }
             .addOnCanceledListener {
                 Snackbar.make(view, "Cancelled Scan", Snackbar.LENGTH_SHORT).show()
@@ -60,7 +61,7 @@ class QRScan : Fragment() {
             }
     }
 
-    private fun findArtefact(rawValue: String?) {
+    private fun findArtefact(rawValue: String?, view: View) {
         Log.d(tag, "Searching for artefact with ID: $rawValue")
 
         val artefactRef = db.collection("artefacts").document(rawValue.toString())
@@ -70,13 +71,9 @@ class QRScan : Fragment() {
                 Log.d(tag, "DocumentSnapshot data: ${document.data}")
                 val artefact = Artefact(document)
 
-                val artefactDetailView = ArtefactDetailView.newInstance(artefact)
-
                 // Use a FragmentTransaction to add the fragment to the activity's layout
-                activity?.supportFragmentManager?.beginTransaction()
-                    ?.replace(R.id.container, artefactDetailView)
-                    ?.addToBackStack(null)
-                    ?.commit()
+                val action = ArtefactsDirections.actionNavigationArtefactsToNavigationArtefactDetailView(artefact)
+                Navigation.findNavController(view).navigate(action)
 
             } else {
                 Log.d(tag, "No such document")
