@@ -89,8 +89,9 @@ class SuggestChange : Fragment() {
                     suggestionList.add(suggestion.toString())
                     timestamp?.let { formatTimestamp(it) }?.let { timestampList.add(it) }
                     Log.d(tag, "Added suggestion: $suggestion with timestamp: $timestamp")
+                    adapter.notifyItemInserted(suggestionList.size - 1)
                 }
-                adapter.notifyDataSetChanged()
+
             }
             .addOnFailureListener { exception ->
                 Log.d(tag, "get failed with ", exception)
