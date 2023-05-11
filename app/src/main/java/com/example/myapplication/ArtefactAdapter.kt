@@ -10,8 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 class ArtefactAdapter(
     private val context: Context,
-    private val artefactList: List<Artefact>,
-    private val viewModel: ArtefactsViewModel
+    private val artefactList: List<Artefact>
 ) : RecyclerView.Adapter<ArtefactAdapter.ArtefactViewHolder>() {
     private var onItemClickListener: OnItemClickListener? = null
 
@@ -39,7 +38,7 @@ class ArtefactAdapter(
 
 
     override fun getItemCount(): Int {
-        return viewModel.artefactList.size
+        return ArtefactsViewModel.getInstance().getArtefactList().size
     }
 
     interface OnItemClickListener {

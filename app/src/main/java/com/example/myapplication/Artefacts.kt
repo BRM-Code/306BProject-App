@@ -6,12 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
@@ -21,9 +19,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 class Artefacts : Fragment() {
-    private val viewModel: ArtefactsViewModel by viewModels()
     private lateinit var adapter: ArtefactAdapter
-    private val fireStore = FirebaseFirestore.getInstance()
+    private val artefacts = ArtefactsViewModel.getInstance()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d("Artefacts", "onCreate")
@@ -39,35 +37,10 @@ class Artefacts : Fragment() {
         return view
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        Log.d("Artefacts", "onViewCreated")
-    }
-
-    override fun onResume() {
-        super.onResume()
-        Log.d("Artefacts", "onResume")
-        if (viewModel.artefactList.isEmpty()) {
-            GlobalScope.launch {
-                fetchArtefacts(requireView())
-            }
-        }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        Log.d("Artefacts", "onPause")
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        Log.d("Artefacts", "onDestroyView")
-    }
-
     private fun setupRecyclerView(view: View) {
         val recyclerView: RecyclerView = view.findViewById(R.id.artefacts_recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        adapter = ArtefactAdapter(requireContext(), viewModel.artefactList, viewModel)
+        adapter = ArtefactAdapter(requireContext(), artefacts.getArtefactList())
 
         adapter.setOnItemClickListener(object : ArtefactAdapter.OnItemClickListener {
             override fun onItemClick(artefact: Artefact) {
@@ -79,9 +52,34 @@ class Artefacts : Fragment() {
         recyclerView.adapter = adapter
     }
 
+}
+
+class ArtefactsViewModel : ViewModel() {
+    private val artefactList: MutableList<Artefact> = mutableListOf()
+    private val fireStore = FirebaseFirestore.getInstance()
+
+    private fun addArtefact(artefact: Artefact) {
+        artefactList.add(artefact)
+    }
+
+    private fun clearArtefacts() {
+        artefactList.clear()
+    }
+
+    fun getArtefactList(): List<Artefact> {
+        if (artefactList.isEmpty()) {
+            Log.d("Artefacts", "getArtefactList: artefactList is empty")
+            fetchArtefacts()
+        }
+        return artefactList
+    }
+
+    fun getArtefactListSortedByYear(): List<Artefact> {
+        return artefactList.sortedBy { it.year }
+    }
+
     @OptIn(DelicateCoroutinesApi::class)
-    private fun fetchArtefacts(view: View) {
-        Snackbar.make(view, "Fetching Artefacts", Snackbar.LENGTH_SHORT).show()
+    fun fetchArtefacts() {
         Log.d("Artefacts", "fetchArtefacts")
 
         GlobalScope.launch(Dispatchers.Main) {
@@ -90,25 +88,21 @@ class Artefacts : Fragment() {
             }
             val artefactCollection = deferred.await()
 
-            viewModel.clearArtefacts() // Clear existing data in the ViewModel
+            clearArtefacts()
             for (document in artefactCollection.documents) {
                 val artefact = Artefact(document)
-                viewModel.addArtefact(artefact)
+                addArtefact(artefact)
             }
-
-            adapter.notifyItemRangeInserted(0, viewModel.artefactList.size)
         }
     }
-}
 
-class ArtefactsViewModel : ViewModel() {
-    val artefactList: MutableList<Artefact> = mutableListOf()
+    companion object {
+        private var instance: ArtefactsViewModel? = null
 
-    fun addArtefact(artefact: Artefact) {
-        artefactList.add(artefact)
-    }
-
-    fun clearArtefacts() {
-        artefactList.clear()
+        fun getInstance(): ArtefactsViewModel {
+            return instance ?: synchronized(this) {
+                instance ?: ArtefactsViewModel().also { instance = it }
+            }
+        }
     }
 }

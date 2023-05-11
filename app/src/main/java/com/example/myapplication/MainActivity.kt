@@ -18,6 +18,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         FirebaseApp.initializeApp(this)
 
+        // Fetching latest list data from firebase
+        ArtefactsViewModel.getInstance().fetchArtefacts()
+        BadgeStore.getInstance().refreshBadges()
+
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         val navView: BottomNavigationView = binding.navView

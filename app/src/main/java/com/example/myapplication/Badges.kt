@@ -6,7 +6,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.ViewModelProvider
 import com.example.myapplication.databinding.FragmentBadgesBinding
 
 class Badges : Fragment() {
@@ -24,9 +23,8 @@ class Badges : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentBadgesBinding.bind(view)
-        val badgeStore = ViewModelProvider(requireActivity())[BadgeStore::class.java]
 
-        badgeStore.badgeList.observe(viewLifecycleOwner) { badgeList ->
+        BadgeStore.getInstance().badgeList.observe(viewLifecycleOwner) { badgeList ->
             if (badgeList != null) {
                 populateBadges(badgeList)
             }
