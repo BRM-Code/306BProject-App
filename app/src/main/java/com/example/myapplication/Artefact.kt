@@ -2,13 +2,15 @@ package com.example.myapplication
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.os.Parcel
+import android.os.Parcelable
 import android.util.Log
 import com.google.firebase.firestore.DocumentSnapshot
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 
-class Artefact(){
+class Artefact() : Parcelable{
     lateinit var name: String
     lateinit var descriptionShort: String
     lateinit var descriptionLong: String
@@ -16,6 +18,15 @@ class Artefact(){
     lateinit var year: String
     private var image: Bitmap? = null
     private val tag = "Artefact"
+
+    constructor(parcel: Parcel) : this() {
+        name = parcel.readString().toString()
+        descriptionShort = parcel.readString().toString()
+        descriptionLong = parcel.readString().toString()
+        imageUrl = parcel.readString().toString()
+        year = parcel.readString().toString()
+        image = getImage()
+    }
 
     constructor(document: DocumentSnapshot): this(){
         this.name = document.data?.get("Name").toString()
@@ -47,6 +58,28 @@ class Artefact(){
                 Log.e(tag, "Failed to load image: ${e.message}")
                 null
             }
+        }
+    }
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeString(name)
+        parcel.writeString(descriptionShort)
+        parcel.writeString(descriptionLong)
+        parcel.writeString(imageUrl)
+        parcel.writeString(year)
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    companion object CREATOR : Parcelable.Creator<Artefact> {
+        override fun createFromParcel(parcel: Parcel): Artefact {
+            return Artefact(parcel)
+        }
+
+        override fun newArray(size: Int): Array<Artefact?> {
+            return arrayOfNulls(size)
         }
     }
 }

@@ -24,12 +24,19 @@ class ArtefactDetailView : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        artefact = arguments?.get("ChosenArtefact") as Artefact
+
         // Use the artefact object to display information
         binding.artefactNameView.text = artefact.name
         binding.descShort.text = artefact.descriptionShort
         binding.descLong.text = artefact.descriptionLong
         binding.year.text = artefact.year
         binding.imageView.setImageBitmap(artefact.getImage())
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     companion object {
