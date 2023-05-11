@@ -9,6 +9,14 @@ import com.google.firebase.firestore.DocumentSnapshot
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import java.io.File
+import android.content.Context
+import android.graphics.Bitmap.CompressFormat
+import android.os.Environment
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import java.io.FileOutputStream
+import java.io.IOException
 
 class Artefact() : Parcelable{
     lateinit var name: String
@@ -20,12 +28,11 @@ class Artefact() : Parcelable{
     private val tag = "Artefact"
 
     constructor(parcel: Parcel) : this() {
-        name = parcel.readString().toString()
-        descriptionShort = parcel.readString().toString()
-        descriptionLong = parcel.readString().toString()
-        imageUrl = parcel.readString().toString()
-        year = parcel.readString().toString()
-        image = getImage()
+        name = parcel.readString() as String
+        descriptionShort = parcel.readString() as String
+        descriptionLong = parcel.readString() as String
+        imageUrl = parcel.readString() as String
+        year = parcel.readString() as String
     }
 
     constructor(document: DocumentSnapshot): this(){
@@ -36,13 +43,28 @@ class Artefact() : Parcelable{
         this.year = document.data?.get("Year").toString()
     }
 
-    fun getImage(): Bitmap? {
+    fun getImage(context: Context): Bitmap? {
         Log.d(tag, "getImage: $imageUrl")
         // If the image has already been downloaded, return it
         if (this.image != null) {
             Log.d(tag, "Found image in cache")
             return this.image
         }
+        if (imageUrl.isEmpty()) {
+            Log.d(tag, "No image URL")
+            return null
+        }
+        // check if it has been downloaded to a file
+        val storageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        val imageFile = File(storageDir, name)
+        if (imageFile.exists()) {
+            Log.d(tag, "Found image in file")
+            val bitmap = BitmapFactory.decodeFile(imageFile.absolutePath)
+            this.image = bitmap
+            return bitmap
+        }
+
+
 
         // Load the image in a background thread using a coroutine
         return runBlocking {
@@ -53,6 +75,7 @@ class Artefact() : Parcelable{
                     BitmapFactory.decodeStream(`in`)
                 }
                 this@Artefact.image = bitmap
+                GlobalScope.launch { saveBitmapToFile(context, bitmap, name) }
                 bitmap
             } catch (e: Exception) {
                 Log.e(tag, "Failed to load image: ${e.message}")
@@ -71,6 +94,22 @@ class Artefact() : Parcelable{
 
     override fun describeContents(): Int {
         return 0
+    }
+
+    private fun saveBitmapToFile(context: Context, bitmap: Bitmap, fileName: String): Boolean {
+        val storageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        val imageFile = File(storageDir, fileName)
+
+        return try {
+            val outputStream = FileOutputStream(imageFile)
+            bitmap.compress(CompressFormat.JPEG, 100, outputStream)
+            outputStream.flush()
+            outputStream.close()
+            true
+        } catch (e: IOException) {
+            e.printStackTrace()
+            false
+        }
     }
 
     companion object CREATOR : Parcelable.Creator<Artefact> {

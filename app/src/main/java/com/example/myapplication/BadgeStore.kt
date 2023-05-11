@@ -73,6 +73,4 @@ class BadgeStore : ViewModel() {
     }
 }
 
-
-
 class Badge(val name: String, var isUnlocked: Boolean)

@@ -24,7 +24,6 @@ class Artefacts : Fragment() {
     private val viewModel: ArtefactsViewModel by viewModels()
     private lateinit var adapter: ArtefactAdapter
     private val fireStore = FirebaseFirestore.getInstance()
-    private var dataFetched = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d("Artefacts", "onCreate")
@@ -49,7 +48,9 @@ class Artefacts : Fragment() {
         super.onResume()
         Log.d("Artefacts", "onResume")
         if (viewModel.artefactList.isEmpty()) {
-            fetchArtefacts(requireView())
+            GlobalScope.launch {
+                fetchArtefacts(requireView())
+            }
         }
     }
 
@@ -96,7 +97,6 @@ class Artefacts : Fragment() {
             }
 
             adapter.notifyItemRangeInserted(0, viewModel.artefactList.size)
-            dataFetched = true
         }
     }
 }

@@ -23,6 +23,8 @@ class ArtefactDetailView : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Have to suppress deprecation warning because of API level 28
+        @Suppress("DEPRECATION")
         val artefact = arguments?.get("ChosenArtefact") as Artefact
 
         // Use the artefact object to display information
@@ -30,7 +32,7 @@ class ArtefactDetailView : Fragment() {
         binding.descShort.text = artefact.descriptionShort
         binding.descLong.text = artefact.descriptionLong
         binding.year.text = artefact.year
-        binding.imageView.setImageBitmap(artefact.getImage())
+        binding.imageView.setImageBitmap(artefact.getImage(this.requireContext()))
     }
 
     override fun onDestroyView() {

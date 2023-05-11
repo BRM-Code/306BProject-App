@@ -30,7 +30,7 @@ class ArtefactAdapter(
         val artefact = artefactList[position]
         holder.artefactName.text = artefact.name
         holder.artefactDescription.text = artefact.descriptionShort
-        holder.artefactImage.setImageBitmap(artefact.getImage())
+        holder.artefactImage.setImageBitmap(artefact.getImage(this.context ))
 
         holder.itemView.setOnClickListener {
             onItemClickListener?.onItemClick(artefact)
