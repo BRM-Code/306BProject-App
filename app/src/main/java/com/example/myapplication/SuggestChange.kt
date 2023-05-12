@@ -26,6 +26,7 @@ class SuggestChange : Fragment() {
     private lateinit var suggestionAdapter: SuggestionAdapter
 
     private val authStateListener = FirebaseAuth.AuthStateListener { auth ->
+        Log.d(tag, "Auth state changed")
         val user = auth.currentUser
         if (user != null) {
             val name = user.email.toString().substringBefore("@")
@@ -49,10 +50,7 @@ class SuggestChange : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         auth = Firebase.auth
-
         auth.addAuthStateListener(authStateListener)
-
-
         setupRecyclerView(view)
         checkCurator()
 

@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.databinding.FragmentCuratorBinding
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.firestore.FirebaseFirestore
 
 class CuratorView : Fragment() {
@@ -19,6 +20,7 @@ class CuratorView : Fragment() {
     private val pendingSuggestions: MutableList<Suggestion> = mutableListOf()
     private var _binding: FragmentCuratorBinding? = null
     private val binding get() = _binding!!
+    private val collectionRef = FirebaseFirestore.getInstance().collection("suggestions")
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -93,7 +95,6 @@ class CuratorView : Fragment() {
         itemTouchHelper.attachToRecyclerView(binding.suggestionList)
     }
 
-
     private fun fetchPendingSuggestions() {
         Log.d("com.example.myapplication.CuratorView", "Fetching pending suggestions")
 
@@ -121,11 +122,46 @@ class CuratorView : Fragment() {
     }
 
     private fun approveSuggestion(suggestion: Suggestion) {
-        // TODO: Implement the logic for approving the suggestion
+        Snackbar.make(binding.root, "Suggestion approved, go implement!", Snackbar.LENGTH_SHORT).show()
+        removeSuggestion(suggestion)
+        acceptSuggestion(suggestion)
     }
 
     private fun denySuggestion(suggestion: Suggestion) {
-        // TODO: Implement the logic for denying the suggestion
+        Snackbar.make(binding.root, "Suggestion denied", Snackbar.LENGTH_SHORT).show()
+        removeSuggestion(suggestion)
+        deleteSuggestion(suggestion)
+    }
+
+    private fun removeSuggestion(suggestion: Suggestion) {
+        pendingSuggestions.remove(suggestion)
+        curatorViewAdapter.notifyDataSetChanged()
+    }
+
+    private fun acceptSuggestion(suggestion: Suggestion) {
+        collectionRef.whereEqualTo("suggestion", suggestion.suggestion)
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                for (document in querySnapshot) {
+                    document.reference.update("isPending", false)
+                        .addOnSuccessListener {Log.d(tag, "Document updated successfully") }
+                        .addOnFailureListener { e -> Log.w(tag, "Error updating document", e) }
+                }
+            }
+            .addOnFailureListener { e -> Log.w(tag, "Error getting documents", e) }
+    }
+
+    private fun deleteSuggestion(suggestion: Suggestion) {
+        collectionRef.whereEqualTo("suggestion", suggestion.suggestion)
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                for (document in querySnapshot) {
+                    document.reference.delete()
+                        .addOnSuccessListener { Log.d(tag, "Document deleted successfully") }
+                        .addOnFailureListener { e -> Log.w(tag, "Error deleted document", e) }
+                }
+            }
+            .addOnFailureListener { e -> Log.w(tag, "Error getting documents", e) }
     }
 
     override fun onDestroyView() {
