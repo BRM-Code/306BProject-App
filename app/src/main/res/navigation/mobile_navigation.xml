@@ -18,7 +18,9 @@
         tools:layout="@layout/fragment_artefacts" >
         <action
             android:id="@+id/action_navigation_Artefacts_to_navigation_ArtefactDetailView"
-            app:destination="@id/navigation_ArtefactDetailView" />
+            app:destination="@id/navigation_ArtefactDetailView"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim" />
     </fragment>
 
     <fragment
@@ -34,7 +36,9 @@
         tools:layout="@layout/fragment_q_r_scan" >
         <action
             android:id="@+id/action_navigation_QRScan_to_navigation_ArtefactDetailView"
-            app:destination="@id/navigation_ArtefactDetailView" />
+            app:destination="@id/navigation_ArtefactDetailView"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim" />
     </fragment>
 
     <fragment
@@ -50,10 +54,14 @@
         tools:layout="@layout/fragment_artefactview" >
         <action
             android:id="@+id/action_navigation_ArtefactDetailView_to_navigation_Artefacts"
-            app:destination="@id/navigation_Artefacts" />
+            app:destination="@id/navigation_Artefacts"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim" />
         <action
             android:id="@+id/action_navigation_ArtefactDetailView_to_navigation_QRScan"
-            app:destination="@id/navigation_QRScan" />
+            app:destination="@id/navigation_QRScan"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim" />
         <argument android:name="ChosenArtefact"
             app:argType="com.example.myapplication.Artefact" />
     </fragment>
