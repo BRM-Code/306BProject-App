@@ -1,10 +1,12 @@
 package com.example.myapplication
 
+import android.graphics.Canvas
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -35,7 +37,15 @@ class CuratorView : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+        val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.Callback() {
+            override fun getMovementFlags(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder
+            ): Int {
+                // Specify the swipe directions
+                return makeMovementFlags(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT)
+            }
+
             override fun onMove(
                 recyclerView: RecyclerView,
                 viewHolder: RecyclerView.ViewHolder,
@@ -51,20 +61,38 @@ class CuratorView : Fragment() {
 
                 // Perform action based on swipe direction
                 when (direction) {
-                    ItemTouchHelper.LEFT -> {
-                        // Denied action
-                        denySuggestion(suggestion)
-                    }
-                    ItemTouchHelper.RIGHT -> {
-                        // Approved action
-                        approveSuggestion(suggestion)
-                    }
+                    ItemTouchHelper.LEFT ->  denySuggestion(suggestion)
+                    ItemTouchHelper.RIGHT -> approveSuggestion(suggestion)
                 }
                 curatorViewAdapter.notifyItemChanged(position) // Notify the adapter that the item has changed
+            }
+
+            override fun onChildDraw(
+                c: Canvas,
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                dX: Float,
+                dY: Float,
+                actionState: Int,
+                isCurrentlyActive: Boolean
+            ) {
+                val backgroundDrawable = ContextCompat.getDrawable(
+                    requireContext(),
+                    if (dX > 0) R.drawable.swipe_approve_bg else R.drawable.swipe_deny_bg
+                )
+                backgroundDrawable?.setBounds(
+                    viewHolder.itemView.left,
+                    viewHolder.itemView.top,
+                    viewHolder.itemView.right,
+                    viewHolder.itemView.bottom
+                )
+                backgroundDrawable?.draw(c)
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
             }
         })
         itemTouchHelper.attachToRecyclerView(binding.suggestionList)
     }
+
 
     private fun fetchPendingSuggestions() {
         Log.d("com.example.myapplication.CuratorView", "Fetching pending suggestions")
