@@ -2,42 +2,49 @@ package com.example.myapplication
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import com.google.android.gms.tasks.Task
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.ktx.Firebase
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class AccountStore : ViewModel() {
     private var suggestions = mutableListOf<Suggestion>()
-    private var userEmail = Firebase.auth.currentUser?.email.toString()
-    private val db = FirebaseFirestore.getInstance().collection("suggestions").document(userEmail).collection("suggestions")
+    private val db = FirebaseFirestore.getInstance().collection("suggestions")
     private val tag = "AccountStore"
 
-    fun fetchSuggestions() {
-        Log.d(tag, "Fetching suggestions")
-        db.get().addOnSuccessListener { documents ->
-            documents.forEach { document ->
-                val suggestion = document.getString("suggestion")
-                val timestamp = document.getTimestamp("timestamp")
+    fun fetchSuggestions(): Task<QuerySnapshot> {
+        val userEmail = Firebase.auth.currentUser?.email.toString()
+        Log.d(tag, "Fetching suggestions for $userEmail")
 
-                if (suggestion != null && timestamp != null){
-                    val suggestionObject = Suggestion(suggestion, timestamp)
-                    suggestions.add(suggestionObject)
-                    Log.d(tag, "Added suggestion: $suggestion with timestamp: $timestamp")
-                }
-            }
-        }
-        .addOnFailureListener { exception ->
-            Log.d(tag, "get failed with ", exception)
-        }
+        return db.whereEqualTo("username", userEmail).get()
     }
 
     fun getSuggestions(): MutableList<Suggestion> {
-        if (suggestions.isEmpty()) {
-            fetchSuggestions()
+        if (Firebase.auth.currentUser != null) {
+            if (suggestions.isEmpty()) {
+                fetchSuggestions().addOnSuccessListener { querySnapshot ->
+                    suggestions.clear()
+                    for (document in querySnapshot.documents) {
+                        val suggestion = document.toObject(Suggestion::class.java)
+                        suggestion?.let { suggestions.add(it) }
+                    }
+                    // Notify observers or update UI here
+                    // For example, you can use LiveData or callbacks to notify observers or update UI
+                }.addOnFailureListener { exception ->
+                    Log.d(tag, "Fetching suggestions failed", exception)
+                }
+            }
+        } else {
+            clearSuggestions()
         }
         return suggestions
     }
+
+
 
     fun submitSuggestion(suggestion: Suggestion){
         val suggestionData = hashMapOf(
@@ -68,8 +75,20 @@ class AccountStore : ViewModel() {
     }
 }
 
-class Suggestion(suggestion: String, timestamp: Timestamp) {
-    var suggestion : String? = suggestion
-    var timestamp : Timestamp? = timestamp
+class Suggestion() {
+    var suggestion: String? = null
+    var timestamp: Timestamp? = null
+    var userName: String? = null
 
+    constructor(suggestion: String, timestamp: Timestamp, userName: String) : this() {
+        this.suggestion = suggestion
+        this.timestamp = timestamp
+        this.userName = userName
+    }
+
+    fun timestampToString(): String {
+        val date = java.sql.Date(timestamp!!.seconds * 1000 + timestamp!!.nanoseconds / 1000000)
+        val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+        return sdf.format(date)
+    }
 }

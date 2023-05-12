@@ -34,4 +34,6 @@
     <string name="scanArtefact">%s Scanned an Artefact</string>
     <string name="submittedImprovement">%s Submitted an Improvement</string>
     <string name="timeLord">%s explored all time periods</string>
+    <string name="curator_view">Curator View</string>
+    <string name="pending_suggestions">Pending Suggestions</string>
 </resources>

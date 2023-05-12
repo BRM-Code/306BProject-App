@@ -106,5 +106,18 @@
         app:maxImageSize="36dp"
         app:tint="@color/white" />
 
+    <Button
+        android:id="@+id/curatorViewButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="1dp"
+        android:text="@string/curator_view"
+        app:layout_constraintBottom_toTopOf="@+id/past_submissions"
+        app:layout_constraintEnd_toStartOf="@+id/submitButton"
+        app:layout_constraintHorizontal_bias="0.373"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/submitBox"
+        app:layout_constraintVertical_bias="1.0" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

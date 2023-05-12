@@ -9,6 +9,8 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.myapplication.databinding.ActivityMainBinding
 import com.google.firebase.FirebaseApp
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 class MainActivity : AppCompatActivity() {
 
@@ -21,8 +23,12 @@ class MainActivity : AppCompatActivity() {
 
         // Fetching latest list data from firebase
         ArtefactsViewModel.getInstance().fetchArtefacts()
-        BadgeStore.getInstance().refreshBadges()
-        AccountStore.getInstance().fetchSuggestions()
+
+        // This data relies on the user being logged in
+        if (Firebase.auth.currentUser != null) {
+            BadgeStore.getInstance().refreshBadges()
+            AccountStore.getInstance().fetchSuggestions()
+        }
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)

@@ -5,10 +5,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 class SuggestionAdapter : RecyclerView.Adapter<SuggestionAdapter.ViewHolder>() {
+    private var suggestions: List<Suggestion> = listOf()
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val suggestionTextView: TextView = view.findViewById(R.id.suggestionTextView)
@@ -21,18 +20,17 @@ class SuggestionAdapter : RecyclerView.Adapter<SuggestionAdapter.ViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val suggestion = AccountStore.getInstance().getSuggestions()[position]
+        val suggestion = suggestions[position]
         holder.suggestionTextView.text = suggestion.suggestion
-        holder.timestampTextView.text = suggestion.timestamp?.let { formatTimestamp(it) }
-    }
-
-    private fun formatTimestamp(timestamp: com.google.firebase.Timestamp): String {
-        val date = java.sql.Date(timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000)
-        val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-        return sdf.format(date)
+        holder.timestampTextView.text = suggestion.timestampToString()
     }
 
     override fun getItemCount(): Int {
-        return AccountStore.getInstance().getSuggestions().size
+        return suggestions.size
+    }
+
+    fun submitList(suggestions: List<Suggestion>) {
+        this.suggestions = suggestions
+        notifyDataSetChanged()
     }
 }
