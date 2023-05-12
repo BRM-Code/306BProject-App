@@ -49,14 +49,16 @@ class AccountStore : ViewModel() {
     fun submitSuggestion(suggestion: Suggestion){
         val suggestionData = hashMapOf(
             "suggestion" to suggestion.suggestion,
-            "timestamp" to suggestion.timestamp
+            "timestamp" to suggestion.timestamp,
+            "username" to suggestion.userName,
+            "isPending" to true
         )
         db.add(suggestionData)
             .addOnSuccessListener { documentReference ->
-                Log.d("AccountStore", "DocumentSnapshot added with ID: ${documentReference.id}")
+                Log.d("AccountStore", "suggestion added with ID: ${documentReference.id}")
             }
             .addOnFailureListener { e ->
-                Log.w(tag, "Error adding document", e)
+                Log.w(tag, "Error submitting suggestion", e)
             }
     }
 
