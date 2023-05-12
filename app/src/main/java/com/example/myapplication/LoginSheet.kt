@@ -38,6 +38,7 @@ class LoginSheet : BottomSheetDialogFragment() {
             binding.logoutButton.visibility = View.VISIBLE
             binding.logoutButton.setOnClickListener {
                 auth.signOut()
+                AccountStore.getInstance().clearSuggestions()
                 snackMessage("Logged out.")
             }
         }
@@ -47,7 +48,10 @@ class LoginSheet : BottomSheetDialogFragment() {
             val password = binding.passwordEditText.text.toString()
             if (email.isNotBlank() && password.isNotBlank()) {
                 auth.signInWithEmailAndPassword(email, password).addOnCompleteListener { task ->
-                    if (task.isSuccessful) dismiss() else snackMessage(authFailMessage)
+                    if (task.isSuccessful) {
+                        AccountStore.getInstance().fetchSuggestions()
+                        dismiss()
+                    } else snackMessage(authFailMessage)
                 }
             } else {
                 snackMessage(emailPassMessage)

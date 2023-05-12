@@ -7,17 +7,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.databinding.FragmentSuggestChangeBinding
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 class SuggestChange : Fragment() {
     private var _binding: FragmentSuggestChangeBinding? = null
     private val binding get() = _binding!!
-    private val db = FirebaseFirestore.getInstance()
     private var user = Firebase.auth.currentUser
     private val tag = "SuggestChange"
 
@@ -32,6 +30,7 @@ class SuggestChange : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setupRecyclerView(view)
         refresh()
 
         binding.accountButton.setOnClickListener {
@@ -42,18 +41,27 @@ class SuggestChange : Fragment() {
         }
         binding.submitButton.setOnClickListener {
             if (user == null) {
-                login()
-                submit()
-                refresh()
+                Snackbar.make(view, "Please log in to submit a suggestion", Snackbar.LENGTH_LONG).show()
             } else{
                 submit()
-                updateRecyclerView()
             }
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        refresh()
+    }
+
+    private fun setupRecyclerView(view: View) {
+        val recyclerView: RecyclerView = view.findViewById(R.id.pastSubmissionsRecyclerView)
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        recyclerView.adapter = SuggestionAdapter()
+    }
+
     private fun refresh() {
         Log.d(tag, "Refreshing")
+
         // Check if user is logged in
         user = Firebase.auth.currentUser
         if (user != null) {
@@ -64,38 +72,7 @@ class SuggestChange : Fragment() {
             // Set the text to ask the user to log in
             binding.loggedInUserTextView.text = getString(R.string.not_logged_in)
         }
-
-        updateRecyclerView()
-    }
-
-    private fun updateRecyclerView() {
-        Log.d(tag, "Updating recycler view")
-        val userEmail = user?.email
-
-        val suggestionsRef = db.collection("suggestions").document(userEmail.toString()).collection("suggestions")
-
-        val suggestionList = mutableListOf<String>()
-        val timestampList = mutableListOf<String>()
-
-        val adapter = SuggestionAdapter(suggestionList, timestampList)
-        binding.pastSubmissionsRecyclerView.adapter = adapter
-        binding.pastSubmissionsRecyclerView.layoutManager = LinearLayoutManager(context)
-
-        suggestionsRef.get().addOnSuccessListener { documents ->
-                for (document in documents) {
-                    val suggestion = document.getString("suggestion")
-                    val timestamp = document.getTimestamp("timestamp")
-
-                    suggestionList.add(suggestion.toString())
-                    timestamp?.let { formatTimestamp(it) }?.let { timestampList.add(it) }
-                    Log.d(tag, "Added suggestion: $suggestion with timestamp: $timestamp")
-                    adapter.notifyItemInserted(suggestionList.size - 1)
-                }
-
-            }
-            .addOnFailureListener { exception ->
-                Log.d(tag, "get failed with ", exception)
-            }
+        setupRecyclerView(requireView())
     }
 
     private fun login() {
@@ -105,35 +82,17 @@ class SuggestChange : Fragment() {
     }
 
     private fun submit(){
-        //get the text from the text box
-        val suggestion = binding.submitBox.text.toString()
-        if (suggestion == "") {
-            return
-        }
-        //get the user's email
-        val timestamp = com.google.firebase.Timestamp.now()
-        //send to firebase
-        val suggestionData = hashMapOf(
-            "suggestion" to suggestion,
-            "timestamp" to timestamp
-        )
-        db.collection("suggestions").document(user?.email.toString()).collection("suggestions").add(suggestionData)
-            .addOnSuccessListener { documentReference ->
-                Log.d(tag, "DocumentSnapshot added with ID: ${documentReference.id}")
-                binding.submitBox.text = null
-                updateRecyclerView()
-            }
-            .addOnFailureListener { e ->
-                Log.w(tag, "Error adding document", e)
-            }
-    }
+        //Check suggestion is valid
+        val suggestionText = binding.submitBox.text.toString()
+        if (suggestionText == "") return
 
-    private fun formatTimestamp(timestamp: com.google.firebase.Timestamp): String {
-        val date = java.sql.Date(timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000)
-        val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-        return sdf.format(date)
-    }
+        //Submit suggestion
+        val suggestion = Suggestion(suggestionText, com.google.firebase.Timestamp.now())
+        AccountStore.getInstance().submitSuggestion(suggestion)
 
+        //Update UI
+        binding.submitBox.text = null
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()

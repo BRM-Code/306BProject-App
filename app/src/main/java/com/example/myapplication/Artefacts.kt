@@ -51,7 +51,6 @@ class Artefacts : Fragment() {
 
         recyclerView.adapter = adapter
     }
-
 }
 
 class ArtefactsViewModel : ViewModel() {

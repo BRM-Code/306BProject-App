@@ -16,12 +16,13 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         FirebaseApp.initializeApp(this)
 
         // Fetching latest list data from firebase
         ArtefactsViewModel.getInstance().fetchArtefacts()
         BadgeStore.getInstance().refreshBadges()
-
+        AccountStore.getInstance().fetchSuggestions()
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
