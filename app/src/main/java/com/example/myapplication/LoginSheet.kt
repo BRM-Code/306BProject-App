@@ -1,9 +1,11 @@
 package com.example.myapplication
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.myapplication.databinding.LoginBottomSheetBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
@@ -16,6 +18,7 @@ class LoginSheet : BottomSheetDialogFragment() {
 
     private val authFailMessage = "Authentication failed."
     private val emailPassMessage = "Email and password must not be blank."
+    val userLoginIntent = "com.example.myapplication.USER_LOGIN"
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -50,6 +53,10 @@ class LoginSheet : BottomSheetDialogFragment() {
                     auth.signInWithEmailAndPassword(email, password).addOnCompleteListener { task ->
                         if (task.isSuccessful) {
                             AccountStore.getInstance().fetchSuggestions()
+
+                            val intent = Intent(userLoginIntent)
+                            LocalBroadcastManager.getInstance(requireContext()).sendBroadcast(intent)
+
                             dismiss()
                         } else snackMessage(authFailMessage)
                     }

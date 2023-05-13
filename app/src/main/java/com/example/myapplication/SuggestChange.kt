@@ -1,11 +1,16 @@
 package com.example.myapplication
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -36,6 +41,16 @@ class SuggestChange : Fragment() {
         refresh()
     }
 
+    private val userLoginReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (intent?.action == "com.example.myapplication.USER_LOGIN") {
+                Log.d("UserLoginReceiver", "User has logged in")
+                refresh()
+            }
+        }
+    }
+
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -50,6 +65,10 @@ class SuggestChange : Fragment() {
         setupRecyclerView(view)
         checkCurator()
 
+        if (savedInstanceState != null){
+            binding.submitBox.text.insert(0, savedInstanceState.getString("Submit_TEXT"))
+        }
+
         binding.accountButton.setOnClickListener { login() }
 
         binding.submitButton.setOnClickListener {
@@ -61,9 +80,21 @@ class SuggestChange : Fragment() {
         }
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        // Saving the user-entered text into the Bundle
+        outState.putString("Submit_TEXT", binding.submitBox.text.toString())
+    }
+
     override fun onResume() {
         super.onResume()
+        LocalBroadcastManager.getInstance(requireContext()).registerReceiver(userLoginReceiver, IntentFilter("com.example.myapplication.USER_LOGIN"))
         refresh()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        LocalBroadcastManager.getInstance(requireContext()).unregisterReceiver(userLoginReceiver)
     }
 
     private fun setupRecyclerView(view: View) {

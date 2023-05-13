@@ -33,11 +33,24 @@ class ArtefactDetailViewEditable : Fragment() {
         // Use the artefact object to display information
         binding.imageView.setImageBitmap(artefact.getImage(this.requireContext()))
 
-        // Set the values for the EditText views
-        binding.eArtefactNameView.setText(artefact.name)
-        binding.eDescShort.setText(artefact.descriptionShort)
-        binding.eDescLong.setText(artefact.descriptionLong)
-        binding.eYear.setText(artefact.year)
+        if (savedInstanceState != null){
+            // Restore the user-entered text from the Bundle
+            val updatedName = savedInstanceState.getString("Name_TEXT")
+            val updatedDescShort = savedInstanceState.getString("DescShort_TEXT")
+            val updatedDescLong = savedInstanceState.getString("DescLong_TEXT")
+            val updatedYear = savedInstanceState.getString("Year_TEXT")
+            binding.eArtefactNameView.setText(updatedName)
+            binding.eDescShort.setText(updatedDescShort)
+            binding.eDescLong.setText(updatedDescLong)
+            binding.eYear.setText(updatedYear)
+        }
+        else{
+            // Set the values for the EditText views
+            binding.eArtefactNameView.setText(artefact.name)
+            binding.eDescShort.setText(artefact.descriptionShort)
+            binding.eDescLong.setText(artefact.descriptionLong)
+            binding.eYear.setText(artefact.year)
+        }
 
         // Enable the EditText views for editing
         binding.eArtefactNameView.isEnabled = true
@@ -47,7 +60,6 @@ class ArtefactDetailViewEditable : Fragment() {
 
         // Add submit button click listener
         binding.submitChangesButton.setOnClickListener {
-
             // Retrieve updated values from the EditText views
             val updatedName = binding.eArtefactNameView.text.toString()
             val updatedDescShort = binding.eDescShort.text.toString()
@@ -75,6 +87,19 @@ class ArtefactDetailViewEditable : Fragment() {
             // Update the artefact in the local store
             ArtefactsStore.getInstance().fetchArtefacts()
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        // Saving the user-entered text into the Bundle
+        val updatedName = binding.eArtefactNameView.text.toString()
+        val updatedDescShort = binding.eDescShort.text.toString()
+        val updatedDescLong = binding.eDescLong.text.toString()
+        val updatedYear = binding.eYear.text.toString()
+        outState.putString("Name_TEXT", updatedName)
+        outState.putString("DescShort_TEXT", updatedDescShort)
+        outState.putString("DescLong_TEXT", updatedDescLong)
+        outState.putString("Year_TEXT", updatedYear)
     }
 
     override fun onDestroyView() {
