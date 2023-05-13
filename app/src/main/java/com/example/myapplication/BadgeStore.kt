@@ -1,6 +1,7 @@
 package com.example.myapplication
 
-import androidx.lifecycle.MutableLiveData
+import android.view.View
+import com.google.android.material.snackbar.Snackbar
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -14,8 +15,7 @@ import kotlinx.coroutines.tasks.await
 @OptIn(DelicateCoroutinesApi::class)
 class BadgeStore : ViewModel() {
     private val firestore = FirebaseFirestore.getInstance()
-    private val _badgeList = MutableLiveData<List<Badge>?>()
-    val badgeList: MutableLiveData<List<Badge>?> = _badgeList
+    private var badgeList: List<Badge>? = null
 
     private val user = Firebase.auth.currentUser?.email.toString()
     private val badgeNameList = listOf(
@@ -31,48 +31,63 @@ class BadgeStore : ViewModel() {
     }
 
     fun refreshBadges() {
+        badgeList = mutableListOf()
+
         GlobalScope.launch(Dispatchers.IO) {
             try {
                 val snapshot = firestore.collection("badges").document(user).get().await()
-                val updatedBadgeList = mutableListOf<Badge>()
 
                 for (name in badgeNameList) {
                     snapshot.get(name)?.let {
-                        updatedBadgeList.add(Badge(name, it as Boolean))
+                        (badgeList as MutableList<Badge>).add(Badge(name, it as Boolean))
                     }
                 }
-
-                _badgeList.postValue(updatedBadgeList)
             } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
     }
 
-    fun setBadgeUnlocked(index: Int, isUnlocked: Boolean) {
-        // Update the corresponding badge in the list
-        val currentList = _badgeList.value?.toMutableList()
-        if (currentList != null && index in currentList.indices) {
-            currentList[index].isUnlocked = isUnlocked
-            _badgeList.postValue(currentList)
+    fun getBadgeList(): List<Badge> {
+        return badgeList!!
+    }
 
-            // Update the corresponding badge document in Firestore
-            GlobalScope.launch(Dispatchers.IO) {
-                try {
-                    val badge = currentList[index]
-                    val documentId = "badge_$index" // Assuming each badge has a unique document ID
-                    val data = hashMapOf(
-                        "name" to badge.name,
-                        "isUnlocked" to isUnlocked
-                    )
-                    firestore.collection("badges").document(documentId).set(data).await()
-                } catch (e: Exception) {
-                    // Handle any error that occurred during updating
-                    e.printStackTrace()
+    fun setBadgeUnlocked(badgeName : String, view : View) {
+        //check if badge is already unlocked
+        for (badge in badgeList!!) {
+            if (badge.name == badgeName) {
+                if (badge.isUnlocked) {
+                    return
+                }
+                else {
+                    badge.isUnlocked = true
+                    Snackbar.make(view, "Badge Unlocked!: $badgeName", Snackbar.LENGTH_SHORT).show()
                 }
             }
         }
+
+        // Update the corresponding badge document in Firestore
+        GlobalScope.launch(Dispatchers.IO) {
+            val data = hashMapOf(
+                "name" to badgeName,
+                "isUnlocked" to true
+            )
+            val documentId = Firebase.auth.currentUser?.email.toString()
+            firestore.collection("badges").document(documentId).set(data).await()
+        }
     }
+
+    fun unlockAnotherUsersBadge(badgeName : String, userEmail : String) {
+        // Update the corresponding badge document in Firestore
+        GlobalScope.launch(Dispatchers.IO) {
+            val data = hashMapOf(
+                "name" to badgeName,
+                "isUnlocked" to true
+            )
+            firestore.collection("badges").document(userEmail).set(data).await()
+        }
+    }
+
     companion object {
         private var instance: BadgeStore? = null
 

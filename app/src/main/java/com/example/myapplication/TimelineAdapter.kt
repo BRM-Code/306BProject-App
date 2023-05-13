@@ -6,6 +6,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 class TimelineAdapter : RecyclerView.Adapter<TimelineAdapter.TimelineViewHolder>() {
+    private val artefacts = ArtefactsStore.getInstance().getArtefactListSortedByYear()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TimelineViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_timeline, parent, false)
@@ -13,12 +14,12 @@ class TimelineAdapter : RecyclerView.Adapter<TimelineAdapter.TimelineViewHolder>
     }
 
     override fun onBindViewHolder(holder: TimelineViewHolder, position: Int) {
-        val timelineItem = ArtefactsViewModel.getInstance().getArtefactListSortedByYear()[position]
+        val timelineItem = artefacts[position]
         holder.bind(timelineItem)
     }
 
     override fun getItemCount(): Int {
-        return ArtefactsViewModel.getInstance().getArtefactList().size
+        return artefacts.size
     }
 
     inner class TimelineViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

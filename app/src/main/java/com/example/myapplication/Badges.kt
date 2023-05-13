@@ -23,12 +23,7 @@ class Badges : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentBadgesBinding.bind(view)
-
-        BadgeStore.getInstance().badgeList.observe(viewLifecycleOwner) { badgeList ->
-            if (badgeList != null) {
-                populateBadges(badgeList)
-            }
-        }
+        populateBadges(BadgeStore.getInstance().getBadgeList())
     }
 
     private fun populateBadges(badgeList: List<Badge>){

@@ -19,59 +19,79 @@
         app:layout_constraintVertical_bias="0.041"
         tools:srcCompat="@tools:sample/avatars" />
 
-    <TextView
-        android:id="@+id/artefact_name_view"
+    <EditText
+        android:id="@+id/e_artefact_name_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
         android:text="@string/artefact_name"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        app:layout_constraintBottom_toTopOf="@+id/desc_short"
+        app:layout_constraintBottom_toTopOf="@+id/e_desc_short"
         app:layout_constraintEnd_toStartOf="@+id/imageView"
         app:layout_constraintHorizontal_bias="0.414"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.452" />
+        app:layout_constraintVertical_bias="0.452"
+        android:importantForAutofill="no"
+        android:inputType="textAutoCorrect" />
 
-    <TextView
-        android:id="@+id/desc_short"
+    <EditText
+        android:id="@+id/e_desc_short"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/description_short"
+        android:minHeight="48dp"
         android:padding="8dp"
+        android:text="@string/description_short"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.086"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView"
-        app:layout_constraintVertical_bias="0.155" />
+        app:layout_constraintVertical_bias="0.155"
+        android:inputType="textAutoCorrect"
+        android:importantForAutofill="no" />
 
-    <TextView
-        android:id="@+id/desc_long"
+    <EditText
+        android:id="@+id/e_desc_long"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/description_long"
+        android:minHeight="48dp"
         android:padding="8dp"
+        android:text="@string/description_long"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.086"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/desc_short"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toBottomOf="@+id/e_desc_short"
+        app:layout_constraintVertical_bias="0.0"
+        android:inputType="textAutoCorrect"
+        android:importantForAutofill="no" />
 
-    <TextView
-        android:id="@+id/year"
+    <EditText
+        android:id="@+id/e_year"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:minWidth="48dp"
+        android:minHeight="48dp"
         android:text="@string/year"
-        app:layout_constraintBottom_toTopOf="@+id/desc_short"
-        app:layout_constraintEnd_toEndOf="@+id/artefact_name_view"
+        app:layout_constraintBottom_toTopOf="@+id/e_desc_short"
+        app:layout_constraintEnd_toEndOf="@+id/e_artefact_name_view"
         app:layout_constraintHorizontal_bias="0.496"
-        app:layout_constraintStart_toStartOf="@+id/artefact_name_view"
-        app:layout_constraintTop_toBottomOf="@+id/artefact_name_view"
-        app:layout_constraintVertical_bias="0.308" />
+        app:layout_constraintStart_toStartOf="@+id/e_artefact_name_view"
+        app:layout_constraintTop_toBottomOf="@+id/e_artefact_name_view"
+        android:inputType="number"
+        android:importantForAutofill="no" />
 
 
+    <Button
+        android:id="@+id/submitChangesButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/submit"
+        app:layout_constraintBottom_toTopOf="@+id/e_artefact_name_view"
+        app:layout_constraintEnd_toStartOf="@+id/imageView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

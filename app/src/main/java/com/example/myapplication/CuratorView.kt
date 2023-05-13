@@ -123,6 +123,7 @@ class CuratorView : Fragment() {
 
     private fun approveSuggestion(suggestion: Suggestion) {
         Snackbar.make(binding.root, "Suggestion approved, go implement!", Snackbar.LENGTH_SHORT).show()
+        BadgeStore.getInstance().unlockAnotherUsersBadge("improvementImplemented", suggestion.userName.toString())
         removeSuggestion(suggestion)
         acceptSuggestion(suggestion)
     }

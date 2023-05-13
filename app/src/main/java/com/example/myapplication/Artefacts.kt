@@ -6,21 +6,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModel
+import androidx.navigation.NavDirections
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
+import com.google.firebase.ktx.Firebase
 
 class Artefacts : Fragment() {
     private lateinit var adapter: ArtefactAdapter
-    private val artefacts = ArtefactsViewModel.getInstance()
+    private val artefacts = ArtefactsStore.getInstance()
+    private var isCurator = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,64 +41,22 @@ class Artefacts : Fragment() {
 
         adapter.setOnItemClickListener(object : ArtefactAdapter.OnItemClickListener {
             override fun onItemClick(artefact: Artefact) {
-                val action = ArtefactsDirections.actionNavigationArtefactsToNavigationArtefactDetailView(artefact)
-                Navigation.findNavController(view).navigate(action)
+                Log.d(tag, "Checking if user is curator")
+                FirebaseFirestore.getInstance().collection("curators").get().addOnSuccessListener { result ->
+                    val curators = result.documents.map { doc -> doc.id }
+                    isCurator = curators.contains(Firebase.auth.currentUser?.email.toString())
+
+                    val action: NavDirections = if (isCurator) {
+                        Log.d(tag, "User is curator")
+                        ArtefactsDirections.actionNavigationArtefactsToArtefactDetailViewEditable(artefact)
+                    } else {
+                        Log.d(tag, "User is not curator")
+                        ArtefactsDirections.actionNavigationArtefactsToNavigationArtefactDetailView(artefact)
+                    }
+                    Navigation.findNavController(view).navigate(action)
+                }
             }
         })
-
         recyclerView.adapter = adapter
-    }
-}
-
-class ArtefactsViewModel : ViewModel() {
-    private val artefactList: MutableList<Artefact> = mutableListOf()
-    private val fireStore = FirebaseFirestore.getInstance()
-
-    private fun addArtefact(artefact: Artefact) {
-        artefactList.add(artefact)
-    }
-
-    private fun clearArtefacts() {
-        artefactList.clear()
-    }
-
-    fun getArtefactList(): List<Artefact> {
-        if (artefactList.isEmpty()) {
-            Log.d("Artefacts", "getArtefactList: artefactList is empty")
-            fetchArtefacts()
-        }
-        return artefactList
-    }
-
-    fun getArtefactListSortedByYear(): List<Artefact> {
-        return artefactList.sortedBy { it.year }
-    }
-
-    @OptIn(DelicateCoroutinesApi::class)
-    fun fetchArtefacts() {
-        Log.d("Artefacts", "fetchArtefacts")
-
-        GlobalScope.launch(Dispatchers.Main) {
-            val deferred = async(Dispatchers.IO) {
-                fireStore.collection("artefacts").get().await()
-            }
-            val artefactCollection = deferred.await()
-
-            clearArtefacts()
-            for (document in artefactCollection.documents) {
-                val artefact = Artefact(document)
-                addArtefact(artefact)
-            }
-        }
-    }
-
-    companion object {
-        private var instance: ArtefactsViewModel? = null
-
-        fun getInstance(): ArtefactsViewModel {
-            return instance ?: synchronized(this) {
-                instance ?: ArtefactsViewModel().also { instance = it }
-            }
-        }
     }
 }

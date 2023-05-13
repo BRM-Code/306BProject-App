@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
         FirebaseApp.initializeApp(this)
 
         // Fetching latest list data from firebase
-        ArtefactsViewModel.getInstance().fetchArtefacts()
+        ArtefactsStore.getInstance().fetchArtefacts()
 
         // This data relies on the user being logged in
         if (Firebase.auth.currentUser != null) {

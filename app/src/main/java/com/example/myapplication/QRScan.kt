@@ -51,6 +51,7 @@ class QRScan : Fragment() {
                 Snackbar.make(view, "Scanned!", Snackbar.LENGTH_SHORT).show()
                 val rawValue: String? = barcode.rawValue
                 findArtefact(rawValue, view)
+                BadgeStore.getInstance().setBadgeUnlocked("timeLord", view)
             }
             .addOnCanceledListener {
                 Snackbar.make(view, "Cancelled Scan", Snackbar.LENGTH_SHORT).show()

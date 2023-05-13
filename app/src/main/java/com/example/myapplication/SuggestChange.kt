@@ -106,6 +106,9 @@ class SuggestChange : Fragment() {
         val suggestion = Suggestion(suggestionText, com.google.firebase.Timestamp.now(), auth.currentUser!!.email.toString())
         AccountStore.getInstance().submitSuggestion(suggestion)
 
+        // Unlock the badge for submitting an improvement
+        BadgeStore.getInstance().setBadgeUnlocked("submittedImprovement", requireView())
+
         binding.submitBox.text = null
 
         // Refresh the RecyclerView to show the new suggestion
