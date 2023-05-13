@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView
 class CuratorViewAdapter(private val context: Context, private val suggestions: List<Suggestion>) :
     RecyclerView.Adapter<CuratorViewAdapter.CuratorViewHolder>() {
 
-
     class CuratorViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val userName: TextView = itemView.findViewById(R.id.textUser)
         val suggestionText: TextView = itemView.findViewById(R.id.textSuggestion)
@@ -27,13 +26,9 @@ class CuratorViewAdapter(private val context: Context, private val suggestions: 
         holder.userName.text = suggestion.userName
         holder.suggestionText.text = suggestion.suggestion
         holder.timestampText.text = suggestion.timestampToString()
-        //TODO: maybe add the swipe listener here?
     }
 
     override fun getItemCount(): Int {
         return suggestions.size
     }
-
-    // ViewHolder and other adapter methods...
 }
-

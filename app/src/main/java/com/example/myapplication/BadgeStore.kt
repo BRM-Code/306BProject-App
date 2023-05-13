@@ -1,18 +1,16 @@
 package com.example.myapplication
 
 import android.view.View
-import com.google.android.material.snackbar.Snackbar
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
-@OptIn(DelicateCoroutinesApi::class)
 class BadgeStore : ViewModel() {
     private val firestore = FirebaseFirestore.getInstance()
     private var badgeList: List<Badge>? = null
@@ -33,7 +31,7 @@ class BadgeStore : ViewModel() {
     fun refreshBadges() {
         badgeList = mutableListOf()
 
-        GlobalScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.Main) {
             try {
                 val snapshot = firestore.collection("badges").document(user).get().await()
 
@@ -67,7 +65,7 @@ class BadgeStore : ViewModel() {
         }
 
         // Update the corresponding badge document in Firestore
-        GlobalScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.Main) {
             val data = hashMapOf(
                 "name" to badgeName,
                 "isUnlocked" to true
@@ -79,7 +77,7 @@ class BadgeStore : ViewModel() {
 
     fun unlockAnotherUsersBadge(badgeName : String, userEmail : String) {
         // Update the corresponding badge document in Firestore
-        GlobalScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.Main) {
             val data = hashMapOf(
                 "name" to badgeName,
                 "isUnlocked" to true

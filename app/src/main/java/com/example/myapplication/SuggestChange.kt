@@ -12,15 +12,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.databinding.FragmentSuggestChangeBinding
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.ktx.Firebase
 
 class SuggestChange : Fragment() {
     private var _binding: FragmentSuggestChangeBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var auth: FirebaseAuth
+    private var auth: FirebaseAuth = FirebaseAuth.getInstance()
     private val tag = "SuggestChange"
     private var isCurator: Boolean = false
     private lateinit var suggestionAdapter: SuggestionAdapter
@@ -38,7 +36,6 @@ class SuggestChange : Fragment() {
         refresh()
     }
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -49,7 +46,6 @@ class SuggestChange : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        auth = Firebase.auth
         auth.addAuthStateListener(authStateListener)
         setupRecyclerView(view)
         checkCurator()

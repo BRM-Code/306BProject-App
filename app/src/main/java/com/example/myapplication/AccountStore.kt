@@ -24,37 +24,44 @@ class AccountStore : ViewModel() {
     }
 
     fun getSuggestions(): MutableList<Suggestion> {
-        if (Firebase.auth.currentUser != null) {
-            if (suggestions.isEmpty()) {
-                fetchSuggestions().addOnSuccessListener { querySnapshot ->
-                    suggestions.clear()
-                    for (document in querySnapshot.documents) {
-                        val suggestion = document.toObject(Suggestion::class.java)
-                        suggestion?.let { suggestions.add(it) }
-                    }
-                    // Notify observers or update UI here
-                    // For example, you can use LiveData or callbacks to notify observers or update UI
-                }.addOnFailureListener { exception ->
-                    Log.d(tag, "Fetching suggestions failed", exception)
+        Log.d(tag, "Getting suggestions")
+
+        if (Firebase.auth.currentUser == null) {
+            Log.d(tag, "User is not logged in, clearing suggestions")
+            clearSuggestions()
+            return suggestions
+        }
+
+        if (suggestions.isEmpty()) {
+            Log.d(tag, "Suggestions list is empty, fetching suggestions")
+            suggestions.clear()
+            fetchSuggestions().addOnSuccessListener { querySnapshot ->
+                for (document in querySnapshot.documents) {
+                    val suggestion = document.toObject(Suggestion::class.java)
+                    suggestion?.let { suggestions.add(it) }
                 }
             }
-        } else {
-            clearSuggestions()
+                .addOnFailureListener { exception ->
+                Log.d(tag, "Fetching suggestions failed", exception)
+            }
         }
+
         return suggestions
     }
 
-
-
     fun submitSuggestion(suggestion: Suggestion){
+        Log.d(tag, "Submitting suggestion")
+
+        // Convert suggestion to HashMap
         val suggestionData = hashMapOf(
             "suggestion" to suggestion.suggestion,
             "timestamp" to suggestion.timestamp,
             "username" to suggestion.userName,
             "isPending" to true
         )
-        db.add(suggestionData)
-            .addOnSuccessListener { documentReference ->
+
+        // Add suggestion to Firebase Firestore
+        db.add(suggestionData).addOnSuccessListener { documentReference ->
                 Log.d("AccountStore", "suggestion added with ID: ${documentReference.id}")
             }
             .addOnFailureListener { e ->

@@ -47,7 +47,6 @@ class ArtefactDetailViewEditable : Fragment() {
 
         // Add submit button click listener
         binding.submitChangesButton.setOnClickListener {
-            Log.d("ArtefactDetailViewEditable", "Submit button clicked")
 
             // Retrieve updated values from the EditText views
             val updatedName = binding.eArtefactNameView.text.toString()
@@ -72,11 +71,6 @@ class ArtefactDetailViewEditable : Fragment() {
                 .addOnFailureListener { exception ->
                     Log.d("ArtefactDetailViewEditable", "Error getting documents: ", exception)
                 }
-            // Update the artefact object
-            artefact.name = updatedName
-            artefact.descriptionShort = updatedDescShort
-            artefact.descriptionLong = updatedDescLong
-            artefact.year = updatedYear
 
             // Update the artefact in the local store
             ArtefactsStore.getInstance().fetchArtefacts()

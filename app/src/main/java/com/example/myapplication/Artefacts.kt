@@ -41,6 +41,7 @@ class Artefacts : Fragment() {
 
         adapter.setOnItemClickListener(object : ArtefactAdapter.OnItemClickListener {
             override fun onItemClick(artefact: Artefact) {
+
                 Log.d(tag, "Checking if user is curator")
                 FirebaseFirestore.getInstance().collection("curators").get().addOnSuccessListener { result ->
                     val curators = result.documents.map { doc -> doc.id }

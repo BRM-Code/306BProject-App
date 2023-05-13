@@ -2,13 +2,12 @@ package com.example.myapplication
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 
 class ArtefactsStore : ViewModel() {
     private val artefactList: MutableList<Artefact> = mutableListOf()
@@ -34,20 +33,17 @@ class ArtefactsStore : ViewModel() {
         return artefactList.sortedBy { it.year }
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
     fun fetchArtefacts() {
         Log.d("Artefacts", "fetchArtefacts")
 
-        GlobalScope.launch(Dispatchers.Main) {
-            val deferred = async(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.Main) {
+            val artefactCollection = withContext(Dispatchers.IO) {
                 fireStore.collection("artefacts").get().await()
             }
-            val artefactCollection = deferred.await()
 
             clearArtefacts()
             for (document in artefactCollection.documents) {
-                val artefact = Artefact(document)
-                addArtefact(artefact)
+                addArtefact(Artefact(document))
             }
         }
     }

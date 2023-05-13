@@ -96,7 +96,7 @@ class CuratorView : Fragment() {
     }
 
     private fun fetchPendingSuggestions() {
-        Log.d("com.example.myapplication.CuratorView", "Fetching pending suggestions")
+        Log.d(tag, "Fetching pending suggestions")
 
         // Query to get all pending suggestions
         FirebaseFirestore.getInstance().collection("suggestions")
@@ -112,9 +112,9 @@ class CuratorView : Fragment() {
                     // Check for null values before adding the suggestion
                     if (timestamp != null && userName != null && suggestionText != null) {
                         pendingSuggestions.add(Suggestion(suggestionText, timestamp, userName))
+                        curatorViewAdapter.notifyItemInserted(pendingSuggestions.size - 1)
                     }
                 }
-                curatorViewAdapter.notifyDataSetChanged() // Notify the adapter that the data has changed
             }
             .addOnFailureListener { exception ->
                 Log.w("com.example.myapplication.CuratorView", "Error getting documents: ", exception)

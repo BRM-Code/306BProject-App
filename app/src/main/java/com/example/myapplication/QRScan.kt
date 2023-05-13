@@ -1,6 +1,5 @@
 package com.example.myapplication
 
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -43,8 +42,7 @@ class QRScan : Fragment() {
                 Barcode.FORMAT_AZTEC)
             .build()
 
-        val context: Context = requireContext()
-        val scanner = GmsBarcodeScanning.getClient(context, options)
+        val scanner = GmsBarcodeScanning.getClient(requireContext(), options)
 
         scanner.startScan()
             .addOnSuccessListener { barcode ->
@@ -52,9 +50,6 @@ class QRScan : Fragment() {
                 val rawValue: String? = barcode.rawValue
                 findArtefact(rawValue, view)
                 BadgeStore.getInstance().setBadgeUnlocked("timeLord", view)
-            }
-            .addOnCanceledListener {
-                Snackbar.make(view, "Cancelled Scan", Snackbar.LENGTH_SHORT).show()
             }
             .addOnFailureListener { e ->
                 Snackbar.make(view, "Scan Failed", Snackbar.LENGTH_SHORT).show()
@@ -65,19 +60,18 @@ class QRScan : Fragment() {
     private fun findArtefact(rawValue: String?, view: View) {
         Log.d(tag, "Searching for artefact with ID: $rawValue")
 
-        val artefactRef = db.collection("artefacts").document(rawValue.toString())
-
-        artefactRef.get().addOnSuccessListener { document ->
+        db.collection("artefacts")
+            .document(rawValue.toString())
+            .get().addOnSuccessListener { document ->
             if (document != null) {
                 Log.d(tag, "DocumentSnapshot data: ${document.data}")
-                val artefact = Artefact(document)
 
-                // Use a FragmentTransaction to add the fragment to the activity's layout
-                val action = ArtefactsDirections.actionNavigationArtefactsToNavigationArtefactDetailView(artefact)
+                // Navigate to ArtefactDetailView
+                val action = ArtefactsDirections.actionNavigationArtefactsToNavigationArtefactDetailView(Artefact(document))
                 Navigation.findNavController(view).navigate(action)
-
             } else {
                 Log.d(tag, "No such document")
+                Snackbar.make(view, "Invalid QR code", Snackbar.LENGTH_SHORT).show()
             }
         }
             .addOnFailureListener { exception ->

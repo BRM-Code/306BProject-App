@@ -13,6 +13,7 @@ import java.io.File
 import android.content.Context
 import android.graphics.Bitmap.CompressFormat
 import android.os.Environment
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.io.FileOutputStream
@@ -43,17 +44,20 @@ class Artefact() : Parcelable{
         this.year = document.data?.get("Year").toString()
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     fun getImage(context: Context): Bitmap? {
         Log.d(tag, "getImage: $imageUrl")
-        // If the image has already been downloaded, return it
-        if (this.image != null) {
-            Log.d(tag, "Found image in cache")
-            return this.image
-        }
+
         if (imageUrl.isEmpty()) {
             Log.d(tag, "No image URL")
             return null
         }
+
+        if (this.image != null) {
+            Log.d(tag, "Found image in cache")
+            return this.image
+        }
+
         // check if it has been downloaded to a file
         val storageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
         val imageFile = File(storageDir, name)
@@ -64,9 +68,7 @@ class Artefact() : Parcelable{
             return bitmap
         }
 
-
-
-        // Load the image in a background thread using a coroutine
+        // Download and save to file
         return runBlocking {
             Log.d(tag, "Downloading image")
             try {
@@ -74,10 +76,11 @@ class Artefact() : Parcelable{
                     val `in` = java.net.URL(imageUrl).openStream()
                     BitmapFactory.decodeStream(`in`)
                 }
-                this@Artefact.image = bitmap
+                image = bitmap
                 GlobalScope.launch { saveBitmapToFile(context, bitmap, name) }
                 bitmap
-            } catch (e: Exception) {
+            }
+            catch (e: Exception) {
                 Log.e(tag, "Failed to load image: ${e.message}")
                 null
             }
@@ -112,6 +115,7 @@ class Artefact() : Parcelable{
         }
     }
 
+    // Not used, but required for Parcelable
     companion object CREATOR : Parcelable.Creator<Artefact> {
         override fun createFromParcel(parcel: Parcel): Artefact {
             return Artefact(parcel)

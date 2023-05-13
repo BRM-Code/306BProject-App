@@ -36,7 +36,6 @@ class ArtefactAdapter(
         }
     }
 
-
     override fun getItemCount(): Int {
         return ArtefactsStore.getInstance().getArtefactList().size
     }
@@ -48,5 +47,4 @@ class ArtefactAdapter(
     fun setOnItemClickListener(listener: OnItemClickListener) {
         onItemClickListener = listener
     }
-
 }
