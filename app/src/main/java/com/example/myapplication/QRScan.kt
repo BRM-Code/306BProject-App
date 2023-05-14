@@ -67,7 +67,7 @@ class QRScan : Fragment() {
                 Log.d(tag, "DocumentSnapshot data: ${document.data}")
 
                 // Navigate to ArtefactDetailView
-                val action = ArtefactsDirections.actionNavigationArtefactsToNavigationArtefactDetailView(Artefact(document))
+                val action = QRScanDirections.actionNavigationQRScanToNavigationArtefactDetailView(Artefact(document))
                 Navigation.findNavController(view).navigate(action)
             } else {
                 Log.d(tag, "No such document")
